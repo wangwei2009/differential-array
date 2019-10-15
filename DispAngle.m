@@ -73,10 +73,11 @@ global fs;
 buffer_size = 1024;
 fs = 8000;
 global deviceReader;
-deviceReader = audioDeviceReader('NumChannels',8,'SampleRate',fs,'SamplesPerFrame',buffer_size);
+channel = 6;
+deviceReader = audioDeviceReader('NumChannels',channel,'SampleRate',fs,'SamplesPerFrame',buffer_size);
 devices = getAudioDevices(deviceReader)
 SoundCardNum = input('please select XMOS sound card number:');
-deviceReader = audioDeviceReader('NumChannels',8,'SampleRate',fs,'SamplesPerFrame',buffer_size,'Device',devices{SoundCardNum});
+deviceReader = audioDeviceReader('NumChannels',channel,'SampleRate',fs,'SamplesPerFrame',buffer_size,'Device',devices{SoundCardNum});
 
 setup(deviceReader);
 global deviceWriter;
