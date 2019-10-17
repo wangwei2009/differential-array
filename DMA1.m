@@ -1,4 +1,4 @@
-function [ y ] = DMA1( x,omega,Hb,Hf,HL,fs,N,tao0,alpha,beta)
+function [ y ] = DMA1( x,spacing,omega,Hb,Hf,HL,fs,N,tao0,alpha,beta)
 %UNTITLED 此处显示有关此函数的摘要
 %   此处显示详细说明
 X = stft(x);
@@ -25,18 +25,24 @@ half_bin = size(X,3);
             else
                 HL(k) = 0.5;
             end
-%             HL(k) = 1/(1-exp(1j*omega(k)*tao0*(alpha-1)));
+            alpha_1_1 = -1;
+%             HL(k) = 1/(1-exp(1j*omega(k)*tao0*(alpha_1_1-1)));
+            HL(k) = 1j/(omega(k)*tao0*(alpha-1));
+%             Hf(:,k) = Hf(:,k)*HL(k);
+%             Hb(:,k) = Hb(:,k)*HL(k);
 %             end
         end
         d = squeeze(X(frameIndex,:,1:half_bin));
 %          d = fft(x(frameIndex:frameIndex+frameLength-1,:).*hann(frameLength));
-         Cf = sum(d.*conj(Hf));
-         Cb = sum(d.*conj(Hb));
-         C = (Cf - beta*Cb).*conj(HL);
-         Y(frameIndex,:) = C;
+         Cf = Hf.*HL;
+         Cb = Hb.*HL;
+         C = (Cf - beta*Cb);
+         Yout = sum(d.*(C));
+         Y(frameIndex,:) = Yout;
     end
     y = istft(Y);
     y = real(y);
+    beam = beampolar(Cf,spacing,tao0);
 
 end
 
