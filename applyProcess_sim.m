@@ -60,7 +60,7 @@ overlap = frameLength - inc;
 y = zeros(size(x,1),1);
 % [ out ] = DMA1( x,omega,Hb,Hf,HL,fs,N_FFT,tao0,alpha,beta);
 x = [x(:,1),x(:,2)];
-[ y,beam] = DMA1_SS( x,d,omega,Hb,Hf,HL,fs,N_FFT,tao0,alpha,beta);
+[ y] = DMA1_SS( x,d,omega,Hb,Hf,HL,fs,N_FFT,tao0,alpha,beta);
 
 %% evaluate
 speech = sig.speech;

@@ -44,14 +44,14 @@ switch 1
         disp('other value')
 end
 x = pcmread('wav/STEREO_0111.pcm',2)';
-d = 0.025;
+d = 0.005;
 M = size(x,2);
 x1 = x;
 
 frameLength = 256;
 overlap = frameLength - inc;
      t = 27;
-     c = (331.3+0.606*t);
+     c = 340;%(331.3+0.606*t);
      null = 90*pi/180;
      tao0 = sin(null)*d/c;
      theta0 = 180;
@@ -67,7 +67,7 @@ overlap = frameLength - inc;
 %% process
 % x = pcmread('wav/STEREO_0024.pcm',2)';
 y = zeros(size(x,1),1);
-[ y,beam] = DMA1_SS( x,d,omega,Hb,Hf,HL,fs,N_FFT,tao0,alpha,beta);
+[ y] = DMA1_SS( x,d,omega,Hb,Hf,HL,fs,N_FFT,tao0,alpha,beta);
 
 %% evaluate
 %speech = sig.speech;
