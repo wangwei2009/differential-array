@@ -10,7 +10,7 @@
 %
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% close all
+close all
 % clear all;
 addpath(genpath('lib'));
 c = 340; % speed of sound
@@ -22,7 +22,7 @@ fs = 16000;
 
 angle = [0,0]/180*pi;
 % array spacing
-d = 0.005;
+d = 0.025;
 r = d/2; 
 
 switch 1
@@ -42,6 +42,7 @@ x = sig.x;
 x1 = x;
 
 frameLength = 256;
+inc = frameLength/2;
 overlap = frameLength - inc;
      t = 27;
      c = (331.3+0.606*t);

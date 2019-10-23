@@ -42,6 +42,11 @@ if nargin==6
 else
     scale = 10;
 end;
+if nargin==7
+    order = varargin{2};
+else
+    order = -1;
+end
 
 
 angle = [angle(1) angle(2)]/180*pi;              % source direction [0,180]
@@ -50,7 +55,7 @@ source_pos = [x1,y1,z1];                         % Source position [x y z] (m)
 
 N = 4;                                           % number of sensor
 
-h = sim.RIR_generator_URA( source_pos,beta,r);
+h = sim.RIR_generator_URA( source_pos,beta,r,order);
 h = h*scale;
 x = zeros(length(source)+size(h,2)-1,N);
 for i=1:N

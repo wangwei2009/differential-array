@@ -1,4 +1,4 @@
-function [ h ] = RIR_generator_URA( s,beta,r)
+function [ h ] = RIR_generator_URA( s,beta,r,order)
 %UNTITLED7 此处显示有关此函数的摘要
 %   此处显示详细说明
 c = 340;                    % Sound velocity (m/s)
@@ -24,7 +24,7 @@ L = [5 4 6];                % Room dimensions [x y z] (m)
 %beta = 0.2;                 % Reverberation time (s)
 n = beta*fs;                   % Number of samples
 mtype = 'omnidirectional';  % Type of microphone
-order = -1;                 % -1 equals maximum reflection order!
+% order = 0;                 % -1 equals maximum reflection order!
 dim = 3;                    % Room dimension
 orientation = 0;            % Microphone orientation (rad)
 hp_filter = 0;              % Enable high-pass filter

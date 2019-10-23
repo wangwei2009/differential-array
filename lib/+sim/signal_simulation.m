@@ -24,8 +24,8 @@ pathname = 'wav/';
 [speech ,fs] = audioread([pathname,'S_01_01.wav']);
 [interference] = audioread([pathname,'S_72_09.wav']);
 
-s      = sim.generate_signal(speech,[90,0],r,2,0.2);
-interf = sim.generate_signal(interference,[0,0],r,2,0.2);
+s      = sim.generate_signal(speech,[90,0],r,2,0.2,10,-1);
+interf = sim.generate_signal(interference,[0,0],r,2,0.2,10,-1);
 
 % signal+interference+diffuse noise
 len_min = min(min(size(s,1),size(interf,1)),size(noise,1));
@@ -33,7 +33,7 @@ len_min = min(min(size(s,1),size(interf,1)),size(noise,1));
 clean_s = s(1:len_min,slice);
 clean_i = interf(1:len_min,slice);
 clean_n = noise(1:len_min,slice);
-switch 2
+switch 1
     case 1
         x = clean_s+clean_i+clean_n;
     case 2

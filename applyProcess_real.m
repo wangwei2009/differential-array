@@ -31,7 +31,7 @@ N_FFT = 256;
 x = loadwav('wav/xmos/rec/');
 d = 0.064;
 % x = loadwav('wav/4mic_r0.005/target_2mic_ganrao_180/');
-d = 0.005;
+% d = 0.005;
 switch 2
     case 1
         x = x(:,[1,3]); % extract speaker-1
@@ -68,7 +68,7 @@ y = zeros(size(x,1),1);
 speech = sig.speech;
 % [pesq_mos]= pesq_vec(speech, out,fs)
 %rmpath(genpath('lib'));
-visual( x(:,1),out );
+visual( x(:,1),y );
 % util.fig(out, fs);
 
 

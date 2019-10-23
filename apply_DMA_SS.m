@@ -44,7 +44,7 @@ switch 1
         disp('other value')
 end
 x = pcmread('wav/STEREO_0111.pcm',2)';
-d = 0.005;
+d = 0.025;
 M = size(x,2);
 x1 = x;
 
@@ -73,7 +73,7 @@ y = zeros(size(x,1),1);
 %speech = sig.speech;
 % [pesq_mos]= pesq_vec(speech, out,fs)
 %rmpath(genpath('lib'));
-%visual( x(:,1),out );
+visual( x(:,1),y*2 );
 % util.fig(out, fs);
 
 

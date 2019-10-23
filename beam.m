@@ -9,8 +9,8 @@ theta = linspace(0,2*pi,360);  % incident angle
 
 f = 1:1:20000;                 % frequency
 
-d = 0.025;                     % sensitive to beampattern
-c = 340;
+d = 0.005;                     % sensitive to beampattern
+c = 345.8;
 tao0 = d/c;                    % delay
 omega = 2*pi*f;                % analog angle frequency
 
@@ -33,6 +33,8 @@ for i = 1:length(f)
         % beamforming
         B(ang,i) = a*H;              % without compensation filter
         B(ang,i) = B(ang,i)*HL(i);   % with compensation filter
+        
+%         B(ang,i) = 1/(1-cos(null))*(cos(theta(ang))-cos(null));   % with compensation filter
     end
 end
 figure,plot(pow2db(abs(B(1,:))),'b'),ylim([-20,5]),
@@ -42,5 +44,10 @@ plot(pow2db(abs(B(90,:))),'r'),ylim([-20,5]),
 hold on,
 plot(pow2db(abs(B(135,:))),'g'),ylim([-20,5]),
 legend('theta = 0','theta = 90','theta = 135');
+
+figure,polarplot(linspace(0,2*pi,360),abs(B(:,480)));
+hold on,polarplot(linspace(0,2*pi,360),abs(B(:,960)));
+hold on,polarplot(linspace(0,2*pi,360),abs(B(:,1920)));
+hold on,polarplot(linspace(0,2*pi,360),abs(B(:,3840)));
 
 figure,mesh(abs(B(:,1:8000))),title('beampattern');
