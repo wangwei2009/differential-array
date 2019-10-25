@@ -52,11 +52,11 @@ Cb = zeros(2,half_bin);
 Cn = zeros(2,half_bin);
 
 B12 = zeros(length(theta),half_bin); % beamformer output
-B21 = zeros(length(theta),length(half_bin)); % beamformer output
-N12 = zeros(length(theta),length(half_bin)); % beamformer output
-M12 = zeros(length(theta),length(half_bin)); % beamformer output
-Y12_2 = zeros(length(theta),length(half_bin)); % beamformer output
-Y12 = zeros(length(theta),length(half_bin)); % beamformer output
+B21 = zeros(length(theta),half_bin); % beamformer output
+N12 = zeros(length(theta),half_bin); % beamformer output
+M12 = zeros(length(theta),half_bin); % beamformer output
+Y12_2 = zeros(length(theta),half_bin); % beamformer output
+Y12 = zeros(length(theta),half_bin); % beamformer output
 
 eps = 1e-8;
 % calculate fixed beamformer weights
@@ -119,6 +119,13 @@ if(nargout==2)
     legend('B12','B21','N12','M12','Y12'); 
 end
 
+B12 = zeros(frameNum,half_bin); % beamformer output
+B21 = zeros(frameNum,half_bin); % beamformer output
+N12 = zeros(frameNum,half_bin); % beamformer output
+M12 = zeros(frameNum,half_bin); % beamformer output
+Y12_2 = zeros(frameNum,half_bin); % beamformer output
+Y12 = zeros(frameNum,half_bin); % beamformer output
+
 for frameIndex = 1:frameNum
     d = squeeze(X(frameIndex,:,1:half_bin));
     
@@ -138,16 +145,9 @@ for frameIndex = 1:frameNum
         else
             Y12_2(frameIndex,k) = beta_ss*abs(N12(frameIndex,k))^2;
         end
-%         SS = (abs(M12(frameIndex,k))^2)./(abs(N12(frameIndex,k))^2);
-%         SS = 10*log10(SS);
-%         if(abs(SS)>2)
-%             Y12_2(frameIndex,k) = max(abs(M12(frameIndex,k))^2-abs(N12(frameIndex,k))^2,1e-6);
-%         else
-%             Y12_2(frameIndex,k) = abs(M12(frameIndex,k))^2;
-%         end
         phase = angle(B12(frameIndex,k));
         Y(frameIndex,k) = sqrt(Y12_2(frameIndex,k))*HL(k)*(cos(phase)+1j*(sin(phase)));
-        Y(frameIndex,k) = abs(N12(frameIndex,k));   
+%         Y(frameIndex,k) = abs(N12(frameIndex,k));   
 %         Y(frameIndex,k) = M12(frameIndex,k);
 %         Y(frameIndex,k) = Y(frameIndex,k)*(cos(phase)+1j*(sin(phase)));   
     end
