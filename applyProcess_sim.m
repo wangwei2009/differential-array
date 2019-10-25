@@ -13,6 +13,7 @@
 close all
 % clear all;
 addpath(genpath('lib'));
+addpath(genpath('DMA_SS'));
 c = 340; % speed of sound
 
 %%
@@ -67,6 +68,7 @@ x = [x(:,1),x(:,2)];
 speech = sig.speech;
 % [pesq_mos]= pesq_vec(speech, out,fs)
 rmpath(genpath('lib'));
+rmpath(genpath('DMA_SS'));
 visual( x(:,1),y );
 % util.fig(out, fs);
 
