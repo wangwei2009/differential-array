@@ -30,9 +30,10 @@ N_FFT = 256;
 % test xmos 4-mic circular array recordings
 x = loadwav('wav/4mic_r0.005/target_2mic_ganrao_90/');
 d = 0.005;
-% x = loadwav('wav/xmos/rec/');
-% d = 0.064;
+x = loadwav('wav/xmos/meetingroom_2/');
+d = 0.064;
 
+cfgs = 'config.m';
 switch 1
     case 1
         x = x(:,[1,3]); % extract speaker-1
@@ -43,10 +44,13 @@ switch 1
     otherwise
         disp('other value')
 end
-x = pcmread('wav/STEREO_0111.pcm',2)';
-d = 0.025;
-M = size(x,2);
-x1 = x;
+% x = pcmread('wav/631/32dB/STEREO_0107.pcm',2)'*10;
+% d = 0.025;
+% M = size(x,2);
+% x1 = x;
+
+% x = loadwav('wav/cmu/');
+% d = 0.03;
 
 frameLength = 256;
 overlap = frameLength - inc;
@@ -67,7 +71,8 @@ overlap = frameLength - inc;
 %% process
 % x = pcmread('wav/STEREO_0024.pcm',2)';
 y = zeros(size(x,1),1);
-[ y] = DMA1_SS( x,d,omega,Hb,Hf,HL,fs,N_FFT,tao0,alpha,beta);
+% WPE_out_2ch = fdndlp(x, cfgs);
+[ y] = DMA1_SS( x,d);
 
 %% evaluate
 %speech = sig.speech;

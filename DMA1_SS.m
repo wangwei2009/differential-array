@@ -1,39 +1,64 @@
-function [ y,Y12] = DMA1_SS( x,spacing,omega,Hb,Hf,HL,fs,N,tao0,alpha,beta)
-%UNTITLED 此处显示有关此函数的摘要
-%   此处显示详细说明
-X = stft(x);
+function [ y,Y12] = DMA1_SS( x,spacing)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% DMAs for Sepctral-Subtraction
+% refer to
+% [1]."Sound Source Separation Using Null-Beamforming and Spectral Subtraction
+%  for mobileDevice"
+% [2]."differential microphone arrays"
+%
+% example Usage:
+%   y = DMA1_SS( x,0.02)
+%
+% Inputs:
+%   x        dual-mic input data,[samples,channel]
+%   spacing  mic spacing     
+%
+% Outputs:
+%   y            processed data
+%
+% Created by Wang wei
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+fs = 16000;
+N_FFT = 1024;
+frameLength = 512;
+inc = 256;
+c = 340;
+tao0 = spacing/c;
+win = sqrt(hann(frameLength+1));
+win = win(1:end-1);
+X = stft(x,N_FFT,frameLength,inc,win);
 % output spectral
 Y = squeeze(X(:,1,:));
+y = zeros(size(x,1),1);
+L = size(x,1);
+frameNum = fix((L - (frameLength-inc))/inc);
 
-frameNum = size(X,1);
-
-N_FFT = 256;
 half_bin = N_FFT/2+1;
 
  
- theta = linspace(0,2*pi,360);   % scaning angle
+theta = linspace(0,2*pi,360);   % scaning angle
 
- HL = zeros(1,half_bin);
+HL = zeros(1,half_bin);
 
- H_1st_f = zeros(2,half_bin);
- H_1st_b = zeros(2,half_bin);
- H_1st_n = zeros(2,half_bin);
- HL_f = zeros(1,half_bin);
- HL_b = zeros(1,half_bin);
- HL_n = zeros(1,half_bin);
- 
- Cf = zeros(2,half_bin);
- Cb = zeros(2,half_bin);
- Cn = zeros(2,half_bin);
+H_1st_f = zeros(2,half_bin);
+H_1st_b = zeros(2,half_bin);
+H_1st_n = zeros(2,half_bin);
+HL_f = zeros(1,half_bin);
+HL_b = zeros(1,half_bin);
+HL_n = zeros(1,half_bin);
 
- B12 = zeros(length(theta),half_bin); % beamformer output
- B21 = zeros(length(theta),length(half_bin)); % beamformer output
- N12 = zeros(length(theta),length(half_bin)); % beamformer output
+Cf = zeros(2,half_bin);
+Cb = zeros(2,half_bin);
+Cn = zeros(2,half_bin);
+
+B12 = zeros(length(theta),half_bin); % beamformer output
+B21 = zeros(length(theta),length(half_bin)); % beamformer output
+N12 = zeros(length(theta),length(half_bin)); % beamformer output
 M12 = zeros(length(theta),length(half_bin)); % beamformer output
 Y12_2 = zeros(length(theta),length(half_bin)); % beamformer output
 Y12 = zeros(length(theta),length(half_bin)); % beamformer output
 
-
+eps = 1e-8;
 % calculate fixed beamformer weights
 for k = 2:half_bin
     omega_k = 2*pi*(k-1)*fs/N_FFT; % normalized digital angular frequency
@@ -66,8 +91,7 @@ for k = 2:half_bin
     Cn(:,k) = H_1st_n(:,k);%.*HL_n(k);
 
     % compensation filter for spectral-subtrctive output
-    HL(k) = 1/sqrt(2*(1-cos(omega_k*tao0)));
-%     HL(k) = 2;
+    HL(k) = 1/(sqrt(2*(1-cos(omega_k*tao0)))+eps);
 end 
  
 % calculate beampattern
@@ -94,10 +118,11 @@ if(nargout==2)
     hold on,polarplot(linspace(0,2*pi,360),abs(Y12(:,k)));
     legend('B12','B21','N12','M12','Y12'); 
 end
-     
+
 for frameIndex = 1:frameNum
-    d = squeeze(X(frameIndex,:,1:half_bin));  
-    for k = 2:N/2+1
+    d = squeeze(X(frameIndex,:,1:half_bin));
+    
+    for k = 2:half_bin
         a = d(:,k); % [1,exp(-1j*omega(k)*sin0)],input signal broadside
         
         % fixed beamformer
@@ -106,14 +131,28 @@ for frameIndex = 1:frameNum
         N12(frameIndex,k) = a.'*Cn(:,k);
         % spectral-subtraction
         M12(frameIndex,k) = min(abs(B12(frameIndex,k)),abs(B21(frameIndex,k)));
-        Y12_2(frameIndex,k) = max(abs(M12(frameIndex,k))^2-abs(N12(frameIndex,k))^2,1e-6);
+        alpha_ss = 1.5;
+        beta_ss = 0.001;
+        if(abs(M12(frameIndex,k))^2>(alpha_ss+beta_ss)*abs(N12(frameIndex,k))^2)
+            Y12_2(frameIndex,k) = abs(M12(frameIndex,k))^2 - alpha_ss*abs(N12(frameIndex,k))^2;
+        else
+            Y12_2(frameIndex,k) = beta_ss*abs(N12(frameIndex,k))^2;
+        end
+%         SS = (abs(M12(frameIndex,k))^2)./(abs(N12(frameIndex,k))^2);
+%         SS = 10*log10(SS);
+%         if(abs(SS)>2)
+%             Y12_2(frameIndex,k) = max(abs(M12(frameIndex,k))^2-abs(N12(frameIndex,k))^2,1e-6);
+%         else
+%             Y12_2(frameIndex,k) = abs(M12(frameIndex,k))^2;
+%         end
         phase = angle(B12(frameIndex,k));
         Y(frameIndex,k) = sqrt(Y12_2(frameIndex,k))*HL(k)*(cos(phase)+1j*(sin(phase)));
-%         Y(frameIndex,k) = M12(frameIndex,k);   
-%         Y(frameIndex,k) = Y(frameIndex,k)*(cos(phase)+1j*(sin(phase)));           
+        Y(frameIndex,k) = abs(N12(frameIndex,k));   
+%         Y(frameIndex,k) = M12(frameIndex,k);
+%         Y(frameIndex,k) = Y(frameIndex,k)*(cos(phase)+1j*(sin(phase)));   
     end
 end
-    y = istft(Y);
+    y = istft(Y,N_FFT,frameLength,inc);
     y = real(y);
 end
 
