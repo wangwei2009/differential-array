@@ -1,7 +1,9 @@
 function [ y ] = DMA1_b2b( x,y,frameLength,inc,omega,Hb,Hf,HL,fs,N,tao0,alpha,beta)
 %UNTITLED 此处显示有关此函数的摘要
 %   此处显示详细说明
-    for i = 1:inc:length(x(:,1))-frameLength
+win = sqrt(hann(frameLength+1));
+win = win(1:end-1);
+    for i = 1:inc:length(x(:,1))-(frameLength-inc)
         for k = 2:N/2+1
             omega(k) = 2*pi*(k-1)*fs/N;    
 %             if k<16
@@ -22,13 +24,14 @@ function [ y ] = DMA1_b2b( x,y,frameLength,inc,omega,Hb,Hf,HL,fs,N,tao0,alpha,be
 %             HL(k) = 1/(1-exp(1j*omega(k)*tao0*(alpha-1)));
 %             end
         end
-         d = fft(x(i:i+frameLength-1,:).*hann(frameLength));
+         d = fft(x(i:i+frameLength-1,:).*win);
          Cf = sum(d(1:N/2+1,:).*Hf',2);
          Cb = sum(d(1:N/2+1,:).*Hb',2);
-         C = (Cf - beta*Cb).*HL';
-%          yd = sum(d(1:129,:),2);
-         fftd = [C;conj(flipud(C(1:N/2-1)))];
-         y(i:i+frameLength-1) = y(i:i+frameLength-1)+(ifft(fftd));
+         C = (Hf - beta*Hb).*HL;
+         yd = sum(d(1:129,:).*C.',2);
+%          yd = d(1:129,1);
+         fftd = [yd;conj(flipud(yd(2:N/2)))];
+         y(i:i+frameLength-1) = y(i:i+frameLength-1)+(ifft(fftd).*win);
     end
 
 end

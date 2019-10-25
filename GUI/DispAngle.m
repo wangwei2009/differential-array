@@ -73,10 +73,12 @@ global fs;
 buffer_size = 1024;
 fs = 8000;
 global deviceReader;
+global channel;
 channel = 6;
 deviceReader = audioDeviceReader('NumChannels',channel,'SampleRate',fs,'SamplesPerFrame',buffer_size);
 devices = getAudioDevices(deviceReader)
-SoundCardNum = input('please select XMOS sound card number:');
+% SoundCardNum = input('please select XMOS sound card number:');
+SoundCardNum = 3;
 deviceReader = audioDeviceReader('NumChannels',channel,'SampleRate',fs,'SamplesPerFrame',buffer_size,'Device',devices{SoundCardNum});
 
 setup(deviceReader);
@@ -109,6 +111,7 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 global deviceReader;
 global deviceWriter;
 global fs;
+global channel;
 
 global dir;
 global start;
@@ -124,8 +127,8 @@ else
     set(handles.pushbutton1, 'BackgroundColor',[1 0 0]);
 end
 
-d = 0.0418;
-inc = 16;
+d = 0.045;
+inc = 128;
 chunk_size = 1024;
 frameLength = 256;
 overlap = frameLength - inc;
@@ -142,14 +145,14 @@ overlap = frameLength - inc;
      Hb = zeros(2,N/2+1);
      HL = zeros(1,N/2+1);
 %      H(:,1) = 1;
-last_acquiredAudio = zeros(overlap,8);
+last_acquiredAudio = zeros(overlap,channel);
 last_output = zeros(overlap,1);
 % playData = zeros(chunk_size,1);
 
 while start
     
         acquiredAudio = deviceReader();
-    x = [last_acquiredAudio(:,[1,dir+1]);acquiredAudio(:,[1,dir+1])];
+    x = [last_acquiredAudio(:,[2,dir+2]);acquiredAudio(:,[2,dir+2])];
 %     size(acquiredAudio)
 %     y = DMA(x);
 %     playData = [last_output;y(1:end-overlap)];
