@@ -13,6 +13,7 @@
 % close all
 % clear all;
 %addpath(genpath('lib'));
+addpath(genpath('DMA_SS'));
 c = 340; % speed of sound
 
 %%
@@ -62,12 +63,13 @@ overlap = frameLength - inc;
 
 %% process
 y = zeros(size(x,1),1);
-[ y] = DMA1( x,d,omega,Hb,Hf,HL,fs,N_FFT,tao0,alpha,beta);
+[ y] = DMA1_SS( x,d);
 
 %% evaluate
 speech = sig.speech;
 % [pesq_mos]= pesq_vec(speech, out,fs)
 %rmpath(genpath('lib'));
+rmpath(genpath('DMA_SS'));
 visual( x(:,1),y );
 % util.fig(out, fs);
 

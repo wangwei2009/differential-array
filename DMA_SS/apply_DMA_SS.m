@@ -21,7 +21,7 @@ overlap = 128;
 inc = frameLength - overlap;
 N_FFT = 256;
 % test xmos 4-mic circular array recordings
-x = loadwav('wav/4mic_r0.005/target_2mic_ganrao_90/');
+x = loadwav('../wav/4mic_r0.005/target_2mic_ganrao_90/');
 d = 0.005*2;
 % x = loadwav('wav/xmos/meetingroom_2/');
 % d = 0.064;
